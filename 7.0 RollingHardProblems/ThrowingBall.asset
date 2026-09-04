@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e2e2318533cdee478cc197dc2db33bc, type: 3}
+  m_Name: ThrowingBall
+  m_EditorClassIdentifier: 
+  displayImage: {fileID: 21300000, guid: 82e1a62900446b7418908e524fcdbd27, type: 3}
+  displayText: If you throw an object at an angle (not 45 degrees), is the Velocity
+    equal in the vertical and horizontal axis (Angle = 90 and 0)?<br>Would the velocity
+    or speed, in these axis be same/different from the velocity in the thrown angle?<br>Imagine
+    you are throwing a ball...
+  solutionImage: {fileID: 21300000, guid: 82e1a62900446b7418908e524fcdbd27, type: 3}
+  solutionText: 'No, if you throw a ball at an angle,<br> its speed can be broken
+    up different directions and it is dependent on the angle thrown.<br>You might''ve
+    imagined throwing a ball straight up or throwing a ball to a friend. <br> Fun
+    fact: The farthest you can throw a ball is Angle = 45, spliting the speeds equally.'

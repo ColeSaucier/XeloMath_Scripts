@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e2e2318533cdee478cc197dc2db33bc, type: 3}
+  m_Name: Probability
+  m_EditorClassIdentifier: 
+  displayImage: {fileID: 0}
+  displayText: 'Cole owns a farm. He is going to randomly kill one for food (He needs
+    to eat!).<br>He has 8 pigs, 7 chickens and 10 cows.<br> What is the probability
+    of randomly selecting a chicken?<br> P(chicken) = '
+  solutionImage: {fileID: 0}
+  solutionText: ' P(chicken) = 7 / (8+7+10) = 7/25'

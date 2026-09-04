@@ -71,12 +71,12 @@ public class SceneRatingsDisplay : MonoBehaviour
         {
             case "0":
             {
-                ratingColor = new Color32(0, 0, 255, 255);
+                ratingColor = new Color32(207, 52, 35, 255);
                 return "...";
             }
             case "1":
             {
-                ratingColor = new Color32(210, 0, 0, 255);
+                ratingColor = new Color32(207, 52, 35, 255);
                 //ratingColor = new Color32(210, 0, 0, 255);
                 return "Standard";
             }
@@ -131,14 +131,22 @@ public class SceneRatingsDisplay : MonoBehaviour
         public string AdditionV;
         public string AdditionFunctionBox;
         public string SubtractionFunctionBox;
-        public string MultiplicationV;
-        public string DivisionV;
         public string NormalAddition;
         public string NormalSubtraction;
+        public string MultiplicationV;
+        public string DivisionV;
         public string LongMultiplication;
         public string FractionFromShape;
         public string FractionEqualize;
         public string FractionEqualizeHard;
+        public string PercentEqualize;
+        public string FractionReduction;
         public string LongDivision;
+        public string PEMDAS;
+        public string PemdasHard;
+        public string Exponent;
+        public string LineFormulation;
+        public string Factoring;
+        public string RollingHardProblems;
     }
 }

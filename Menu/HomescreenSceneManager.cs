@@ -20,8 +20,8 @@ public class HomescreenSceneManager : MonoBehaviour
     public string currentLevel;
     public TextMeshProUGUI MenuGradeText;
 
-    List<string> levelOrder = new List<string> {"NumberCounting", "NumberCountingScattered", "BasicAdditionV", "BasicSubtractionV", "ShapePatterns", "SmallerOrBigger", "PlaceValues", "Clock", "AdditionV", "AdditionFunctionBox", "SubtractionFunctionBox", "MultiplicationV", "DivisionV", "NormalAddition", "NormalSubtraction", "LongMultiplication", "FractionFromShape", "FractionEqualize", "FractionEqualizeHard", "LongDivision"};
-
+    List<string> levelOrder = new List<string> {"NumberCounting", "NumberCountingScattered", "BasicAdditionV", "BasicSubtractionV", "ShapePatterns", "SmallerOrBigger", "PlaceValues", "Clock", "AdditionV", "AdditionFunctionBox", "SubtractionFunctionBox", "MultiplicationV", "DivisionV", "NormalAddition", "NormalSubtraction", "LongMultiplication", "FractionFromShape", "FractionEqualize", "FractionEqualizeHard", "FractionReduction", "PercentEqualize", "LongDivision", "PEMDAS", "PemdasHard", "Exponent", "LineFormulation", "Factoring", "RollingHardProblems"};
+    
     public SceneRatingsDisplay sceneRatingsDisplay;
 
     public void Start()

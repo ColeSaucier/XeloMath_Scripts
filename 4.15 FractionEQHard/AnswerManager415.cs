@@ -17,6 +17,8 @@ public class AnswerManager415 : AnswerManagerBase
     public TextMeshProUGUI keyboardNumerator;
     public TextMeshProUGUI keyboardDenominator;
 
+    public FractionMobileKeyboardController03 keyboard;
+
     // Update is called once per frame
     public override void Update()
     {
@@ -57,18 +59,49 @@ public class AnswerManager415 : AnswerManagerBase
             }
             else
             {
-                if (secondInput == true)
+                //If rating not good enough
+                if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
                 {
-                    keyboardDenominator.text = "";
+                    if (secondInput == true)
+                    {
+                        keyboardDenominator.text = "";
+                    }
+                    else
+                    {
+                        keyboardNumerator.text = "";
+                    }
+
+                
+                    Handheld.Vibrate();
+                    Color32 shiftColor = new Color32(210, 0, 0, 50);
+                    base.DisplayColoredImage(shiftColor, 0.2f);
                 }
+                // Rating good enough for enhanced speed
                 else
                 {
-                    keyboardNumerator.text = "";
+
+                    if (secondInput == true)
+                    {
+                        if (keyboardDenominator.text.Length >= copiedDenominator.ToString().Length)
+                        {
+                            keyboardDenominator.text = "";
+                            Handheld.Vibrate();
+                            Color32 shiftColor = new Color32(210, 0, 0, 50);
+                            base.DisplayColoredImage(shiftColor, 0.2f);
+                        }
+                    }
+                    else
+                    {
+                        if (keyboardNumerator.text.Length >= copiedNumerator.ToString().Length)
+                        {
+                            keyboardNumerator.text = "";
+                            Handheld.Vibrate();
+                            Color32 shiftColor = new Color32(210, 0, 0, 50);
+                            base.DisplayColoredImage(shiftColor, 0.2f);
+                        }
+                    }
+
                 }
-                
-                Handheld.Vibrate();
-                Color32 shiftColor = new Color32(210, 0, 0, 50);
-                base.DisplayColoredImage(shiftColor, 0.2f);
             }
         }
         else

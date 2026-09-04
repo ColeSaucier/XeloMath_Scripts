@@ -24,6 +24,11 @@ public class PlayerPreferenceManagement : MonoBehaviour
 
     public SceneCompleteMenu sceneCompleteMenu_script;
 
+    private GameObject UI_Bridge_Object = null;
+    private UI_Scene_Bridge UI_Scene_Bridge__SCRIPT;
+    public Toggle swipeHintToggle;
+
+
     private void Start()
     {
         playerObject = new PlayerData();
@@ -47,11 +52,18 @@ public class PlayerPreferenceManagement : MonoBehaviour
         {
             // Show the pace bar
             //paceBarImage.gameObject.SetActive(true);
+            if (sceneCompleteMenu_script.beatScoreBar != null)
+            {
+                sceneCompleteMenu_script.HideShowPaceBarSC(true);
+            }
         }
         else
         {
             // Hide the pace bar
-            sceneCompleteMenu_script.HideShowPaceBarSC(false);
+            if (sceneCompleteMenu_script.beatScoreBar != null)
+            {
+                sceneCompleteMenu_script.HideShowPaceBarSC(false);
+            }
         }
 
         if (playerObject.timeEnabledNotPace)
@@ -60,8 +72,11 @@ public class PlayerPreferenceManagement : MonoBehaviour
         }
         else
         {
-            // Hide the TextMeshPro objects
-            sceneCompleteMenu_script.HideShowTimeTextsSC(false);
+            if (sceneCompleteMenu_script.beatScoreBar != null)
+            {
+                // Hide the TextMeshPro objects
+                sceneCompleteMenu_script.HideShowTimeTextsSC(false);
+            }
         }
 
         if (playerObject.leaderboardEnabled)
@@ -72,6 +87,35 @@ public class PlayerPreferenceManagement : MonoBehaviour
         {
             // Hide the TextMeshPro objects
             sceneCompleteMenu_script.leaderboardEnabled = false;
+        }
+        Find_UI_Bridge();
+
+        if (swipeHintToggle != null)
+        {
+            swipeHintToggle.isOn = playerObject.swipeHint;
+        }
+
+    }
+    public void Find_UI_Bridge()
+    {
+        UI_Bridge_Object = GameObject.Find("UI_Bridge");
+        if (UI_Bridge_Object != null)
+        {
+            UI_Scene_Bridge__SCRIPT = UI_Bridge_Object.GetComponent<UI_Scene_Bridge>();
+            if (UI_Scene_Bridge__SCRIPT == null)
+            {
+                //Debug.LogError("Bridge Failed");
+            }
+            else
+            {
+                //Sending saved SwipeHint Enabled bool to bridge
+                //Match to setting
+                UI_Scene_Bridge__SCRIPT.PassOnSwipeHint_ToAnimationSwipeHint(playerObject.swipeHint);
+            }
+        }
+        else
+        {
+            //Debug.LogError("UI_Bridge object not found.");
         }
     }
 
@@ -91,6 +135,17 @@ public class PlayerPreferenceManagement : MonoBehaviour
         File.WriteAllText(filePath, playerjsonString);
     }
 
+    public void ChangeSwipeHint_AndSave()
+    {
+        // Updates settings within AnimationSwipeHint to either have animation or not
+        if (playerObject.swipeHint != swipeHintToggle.isOn)
+        {
+            playerObject.swipeHint = swipeHintToggle.isOn;
+            UI_Scene_Bridge__SCRIPT.PassOnSwipeHint_ToAnimationSwipeHint(playerObject.swipeHint);
+            SavePlayerData();            
+        }
+    }
+
     public void HideShowPaceBar()
     {
         if (paceBarToggle.isOn)
@@ -99,7 +154,10 @@ public class PlayerPreferenceManagement : MonoBehaviour
             playerObject.timeEnabled = true;
             SavePlayerData();
             // Show the pace bar
-            sceneCompleteMenu_script.HideShowPaceBarSC(true);
+            if (sceneCompleteMenu_script.beatScoreBar != null)
+            {
+                sceneCompleteMenu_script.HideShowPaceBarSC(true);
+            }
             //paceBarImage.gameObject.SetActive(true);
         }
         else
@@ -107,8 +165,10 @@ public class PlayerPreferenceManagement : MonoBehaviour
             //Alter persistent data
             playerObject.timeEnabled = false;
             SavePlayerData();
-            // Hide the pace bar
-            sceneCompleteMenu_script.HideShowPaceBarSC(false);
+            if (sceneCompleteMenu_script.beatScoreBar != null)
+            {
+                sceneCompleteMenu_script.HideShowPaceBarSC(false);
+            }
             //paceBarImage.gameObject.SetActive(false);
         }
     }
@@ -200,6 +260,7 @@ public class PlayerPreferenceManagement : MonoBehaviour
         public bool timeEnabled;
         public bool timeEnabledNotPace;
         public bool leaderboardEnabled;
+        public bool swipeHint;
         public string swipeRight;
         public string swipeLeft;
         public string swipeDown;

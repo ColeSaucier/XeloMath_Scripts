@@ -26,11 +26,20 @@ public class DetermineCompletedLevels : MonoBehaviour
     public Button Button13;
     public Button Button14;
     public Button Button15;
+    public Button Button155;
     public Button Button16;
     public Button Button17;
     public Button Button18;
     public Button Button19;
     public Button Button20;
+    public Button Button21;
+    public Button Button22;
+    public Button Button23;
+    public Button Button24;
+    public Button Button25;
+    public Button Button26;
+    public Button Button27;
+    public Button Button28;
 
     public TextMeshProUGUI text1;
     public TextMeshProUGUI text2;
@@ -47,11 +56,20 @@ public class DetermineCompletedLevels : MonoBehaviour
     public TextMeshProUGUI text13;
     public TextMeshProUGUI text14;
     public TextMeshProUGUI text15;
+    public TextMeshProUGUI text155;
     public TextMeshProUGUI text16;
     public TextMeshProUGUI text17;
     public TextMeshProUGUI text18;
     public TextMeshProUGUI text19;
     public TextMeshProUGUI text20;
+    public TextMeshProUGUI text21;
+    public TextMeshProUGUI text22;
+    public TextMeshProUGUI text23;
+    public TextMeshProUGUI text24;
+    public TextMeshProUGUI text25;
+    public TextMeshProUGUI text26;
+    public TextMeshProUGUI text27;
+    public TextMeshProUGUI text28;
 
     public GameObject menu;
     public GameObject loadingInterface;
@@ -72,15 +90,18 @@ public class DetermineCompletedLevels : MonoBehaviour
     void Start()
     {
         filePath = Path.Combine(Application.persistentDataPath, completedLevelTextFilePath);
-        //Debug.LogError(filePath);
+        Debug.LogError($"Completed levels file path: {filePath}");
         completedLevels = GetUniqueValuesFromFile();
-        //Debug.Log("completedLevels: " + string.Join(", ", completedLevels.ToArray()));
+        Debug.LogError($"completedLevels: {string.Join(", ", completedLevels)}");
 
         //retrieve data and create dataObject + UpdateValue_AllSceneRatings()
         allSceneRatingObject = new AllSceneRatingsData();
         filePath = Path.Combine(Application.persistentDataPath, allSceneRatingsjsonFilePath); // Combine with the Assets folder
+        Debug.LogError($"All scene ratings file path: {filePath}");
         allSceneRatingsJsonString = File.ReadAllText(filePath);
+        Debug.LogError($"All scene STRINGGGG : {allSceneRatingsJsonString}");
         allSceneRatingObject = JsonUtility.FromJson<AllSceneRatingsData>(allSceneRatingsJsonString);
+        Debug.LogError("We appear to have gathered the allSceneRatingObject");
         
         allSceneRatingDictionary = new Dictionary<string, string>
         {
@@ -103,8 +124,17 @@ public class DetermineCompletedLevels : MonoBehaviour
             { "FractionFromShape", allSceneRatingObject.FractionFromShape},
             { "FractionEqualize", allSceneRatingObject.FractionEqualize},
             { "FractionEqualizeHard", allSceneRatingObject.FractionEqualizeHard},
-            { "LongDivision", allSceneRatingObject.LongDivision}
+            { "PercentEqualize", allSceneRatingObject.PercentEqualize},
+            { "FractionReduction", allSceneRatingObject.FractionReduction},
+            { "LongDivision", allSceneRatingObject.LongDivision},
+            { "PEMDAS", allSceneRatingObject.PEMDAS},
+            { "PemdasHard", allSceneRatingObject.PemdasHard},
+            { "Exponent", allSceneRatingObject.Exponent},
+            { "LineFormulation", allSceneRatingObject.LineFormulation},
+            { "Factoring", allSceneRatingObject.Factoring},
+            { "RollingHardProblems", allSceneRatingObject.RollingHardProblems}
         };
+
         DeactivateButtons();
     }
 
@@ -130,6 +160,14 @@ public class DetermineCompletedLevels : MonoBehaviour
         DeactivateButtonIfNotInList(Button18);
         DeactivateButtonIfNotInList(Button19);
         DeactivateButtonIfNotInList(Button20);
+        DeactivateButtonIfNotInList(Button21);
+        //DeactivateButtonIfNotInList(Button22);
+        DeactivateButtonIfNotInList(Button23);
+        DeactivateButtonIfNotInList(Button24);
+        DeactivateButtonIfNotInList(Button25);
+        DeactivateButtonIfNotInList(Button26);
+        DeactivateButtonIfNotInList(Button27);
+        //DeactivateButtonIfNotInList(Button28);
 
         UpdateStarRatings(text1);
         UpdateStarRatings(text2);
@@ -151,12 +189,22 @@ public class DetermineCompletedLevels : MonoBehaviour
         UpdateStarRatings(text18);
         UpdateStarRatings(text19);
         UpdateStarRatings(text20);
+        UpdateStarRatings(text21);
+        UpdateStarRatings(text20);
+        UpdateStarRatings(text21);
+        UpdateStarRatings(text22);
+        UpdateStarRatings(text23);
+        UpdateStarRatings(text24);
+        UpdateStarRatings(text25);
+        UpdateStarRatings(text26);
+        UpdateStarRatings(text27);
+        UpdateStarRatings(text28);
     }
 
     public void DeactivateButtonIfNotInList(Button button)
     {
-        //Debug.Log("The name of this GameObject is: " + button.gameObject.name);
-        //Debug.Log("completedLevels " + string.Join(", ", completedLevels.ToArray()));
+        Debug.Log("The name of this GameObject is: " + button.gameObject.name);
+        Debug.Log("completedLevels " + string.Join(", ", completedLevels.ToArray()));
         // Check if the button's name is not in the completedLevels list
         if (!completedLevels.Contains(button.gameObject.name))
         {
@@ -178,6 +226,7 @@ public class DetermineCompletedLevels : MonoBehaviour
     public float starScale = 1.0f; // Public variable to adjust star size
     public float localOffset; // Example value, adjust as needed
 
+    public TextMeshProUGUI ratingDisplayHardProblems; 
     public void UpdateStarRatings(TextMeshProUGUI textUGUI)
     {
         ratingString = textUGUI.gameObject.name;
@@ -186,7 +235,6 @@ public class DetermineCompletedLevels : MonoBehaviour
         
         // Get the position of the text and adjust with the public offset
         Vector3 centerPoint = textUGUI.rectTransform.localPosition + centerPointOffset;
-        
         switch (numberOfStars)
         {
             case 0:
@@ -227,6 +275,7 @@ public class DetermineCompletedLevels : MonoBehaviour
                 //Debug.LogError($"Distance between Star 2 and Star 3: {distance2_3}");
                 break;
             default:
+                ratingDisplayHardProblems.text = numberOfStars.ToString();
                 Debug.LogWarning("Rating out of expected range: " + rating);
                 break;
         }
@@ -251,7 +300,7 @@ public class DetermineCompletedLevels : MonoBehaviour
 
         // Scale the star based on the starScale
         rectTransform.sizeDelta = new Vector2(starScale, starScale); // Set the size of the image (this is the UI equivalent of scaling the sprite)
-        Debug.LogError($"Position: {position}");
+        //Debug.LogError($"Position: {position}");
     }
 
     private SwipeHandler swipeHandler;
@@ -263,21 +312,23 @@ public class DetermineCompletedLevels : MonoBehaviour
             swipeHandler = transitionAnimationsObject.GetComponent<SwipeHandler>();
             if (swipeHandler == null)
             {
-                Debug.LogError("Animator component not found");
+                //Debug.LogError("Animator component not found");
             }
             else
             {
-                Debug.LogError("Animator component found");
+                //Debug.LogError("Animator component found");
             }
         }
         else
         {
-            Debug.LogError("Object not found. //");
+            //Debug.LogError("Object not found. //");
         }
 
         //Start scene via button name
         string sceneString = button.gameObject.name;
-        Debug.LogError("Starting Trigger with string: "+sceneString);
+        Debug.LogError($"sceneString {sceneString}");
+
+        //Debug.LogError("Starting Trigger with string: "+sceneString);
         //StartCoroutine(sceneHandlerScript.StartAnyScene_NoTransition(sceneString));
         swipeHandler.triggerTransitionByUpdate_SceneName = sceneString;
     }
@@ -342,6 +393,14 @@ public class DetermineCompletedLevels : MonoBehaviour
         public string FractionFromShape;
         public string FractionEqualize;
         public string FractionEqualizeHard;
+        public string PercentEqualize;
+        public string FractionReduction;
         public string LongDivision;
+        public string PEMDAS;
+        public string PemdasHard;
+        public string Exponent;
+        public string LineFormulation;
+        public string Factoring;
+        public string RollingHardProblems;
     }
 }

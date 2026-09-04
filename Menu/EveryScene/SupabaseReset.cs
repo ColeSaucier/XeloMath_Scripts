@@ -17,11 +17,12 @@ public class SupabaseReset : MonoBehaviour
     private Client supabase;
 
     private ActivityInsertDelayed activityInsertObject;
+    private HeartboolInsertDelayed heartInsertObject;
 
     private void Start()
     {
         // Initialize the Supabase client
-        supabase = new Client("https://acpornqddkzqsdppbabw.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjcG9ybnFkZGt6cXNkcHBiYWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM2NTU5MzcsImV4cCI6MjAyOTIzMTkzN30.UQ73w2nx-UxmXhxBF2_jSTl19aZ1bjb9LjYY4eraMtY");
+        supabase = new Client("https://crynucdigbnxdsnywawe.supabase.co", "sb_publishable_rXQIggagT9rQEGPMiGnyIg_JXVp2yww");
         if (supabase == null) {
             Debug.LogError("Supabase client is not initialized.");
             return;
@@ -89,5 +90,60 @@ public class SupabaseReset : MonoBehaviour
         public string user_name1;
         public string level1;
         public float duration1;
+    }
+
+    public async Task InsertHeartBool(string level, string username, bool heart)
+    {
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "username_param", level},
+            { "level_param", username},
+            { "like_bool_param", heart}
+        };
+
+        try
+        {
+            var response = await supabase.Rpc("insert_heartbool", parameters);
+            //Debug.LogError("User inserted successfully.");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to insert heartbool set due to an exception: {ex.Message}");
+            //IMPO: Save activity to json object then file.
+
+            heartInsertObject = new HeartboolInsertDelayed();
+            // Set ActivityInsert() values from args
+            heartInsertObject.level = level;
+            heartInsertObject.username = username;
+            heartInsertObject.heart = heart;
+
+
+
+            int i = 0;
+            string currentFilePath = Path.Combine(Application.persistentDataPath, $"HeartboolInsertDelayed{i}.json");//"ActivityInsert0.json"
+
+            //file already exists, find empty value
+            while (File.Exists(currentFilePath))
+            {
+                i++;
+                currentFilePath = Path.Combine(Application.persistentDataPath, $"HeartboolInsertDelayed{i}.json");
+            }
+            //file does not exist
+            // Save to JSON file
+            string json = JsonUtility.ToJson(heartInsertObject);
+            File.WriteAllText(currentFilePath, json);
+
+            // Handle error
+            Debug.LogError("Failed to insert activity set. SAVED...");
+            //Debug.LogError("currentFilePath: "  + currentFilePath);
+        }
+    }
+    [Serializable]
+    public class HeartboolInsertDelayed
+    {
+        public string level;
+        public string username;
+        public bool heart;
     }
 }

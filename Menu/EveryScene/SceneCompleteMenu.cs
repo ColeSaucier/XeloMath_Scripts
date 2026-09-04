@@ -16,7 +16,7 @@ public class SceneCompleteMenu : MonoBehaviour
     public Button Button3;
     public TextMeshProUGUI ratingText;
     public TextMeshProUGUI timeText;
-    public TextMeshProUGUI besttimeText;
+    //public TextMeshProUGUI besttimeText;
     //public GameObject SceneCompleteCanvas;
     public TextMeshProUGUI repCounter;
     public CanvasGroup sceneCanvasGroup;
@@ -28,7 +28,7 @@ public class SceneCompleteMenu : MonoBehaviour
     public float startTime;
 
     //For Data Collection/Saving
-    private SceneData sceneObject;
+    public SceneData sceneObject;
     public string scenejsonFilePath;
     private string sceneJsonString;
     private VariableData variableObject;
@@ -39,12 +39,14 @@ public class SceneCompleteMenu : MonoBehaviour
     private string allSceneRatingsJsonString;
     private string filePath; 
     public string completedLevelTextFilePath;//"1.01 SubtractionV"
-    List<string> levelOrder = new List<string> {"NumberCounting", "NumberCountingScattered", "BasicAdditionV", "BasicSubtractionV", "ShapePatterns", "SmallerOrBigger", "PlaceValues", "Clock", "AdditionV", "AdditionFunctionBox", "SubtractionFunctionBox", "MultiplicationV", "DivisionV", "NormalAddition", "NormalSubtraction", "LongMultiplication", "FractionFromShape", "FractionEqualize", "FractionEqualizeHard", "LongDivision"};
+
+    List<string> levelOrder = new List<string> {"NumberCounting", "NumberCountingScattered", "BasicAdditionV", "BasicSubtractionV", "ShapePatterns", "SmallerOrBigger", "PlaceValues", "Clock", "AdditionV", "AdditionFunctionBox", "SubtractionFunctionBox", "MultiplicationV", "DivisionV", "NormalAddition", "NormalSubtraction", "LongMultiplication", "FractionFromShape", "FractionEqualize", "FractionEqualizeHard", "FractionReduction", "PercentEqualize", "LongDivision", "PEMDAS", "PemdasHard", "Exponent", "LineFormulation", "Factoring", "RollingHardProblems"};
     public string currentScene;// = text.gameObject.name;
 
     //Pace time bar vars
     public GameObject barHolder;
     public Image beatScoreBar;
+    //public Image backgroundBar;
     public float repPaceTime;
     public float totalTimeToBeatScore;
     public float elapsedTime;
@@ -66,62 +68,45 @@ public class SceneCompleteMenu : MonoBehaviour
     public GameObject star2;
     public GameObject star3;
 
+    public Image heartImage;
+    public Sprite fullheartsprite;
+    public Sprite heartsprite;
+
     // Start is called before the first frame update
     void Start()
     {
         sceneCanvasGroup.interactable = false;
-        //Testing_ImprovementBars(); DELETE
 
-        //retrieve data and create dataObject
+        // Retrieve data and create dataObject
         sceneObject = new SceneData();
         LoadSceneData();
+        //Debug.LogError($"sceneObject.bestRating {sceneObject.bestRating}");
 
-        //retrieve data and create dataObject
+        // Retrieve data and create dataObject
         variableObject = new VariableData();
         LoadVariableData();
 
-        //Check if Animation Scene needs to be loaded
+        // Check if Animation Scene needs to be loaded
         CheckIfUiNeeded();
-        GameObject transitionAnimationsObject = GameObject.Find("TransitionAnimations");
-        if (transitionAnimationsObject != null)
-        {
-            swipeHandler = transitionAnimationsObject.GetComponent<SwipeHandler>();
-            if (swipeHandler == null)
-            {
-                Debug.LogError("Animator component not found");
-            }
-            else
-            {
-                //Debug.LogError("Animator component found");
-            }
-        }
-        else
-        {
-            Debug.LogError("transitionAnimationsObject not found.");
-        }
+        DefineSwipe_AnimationHandler(); // Call the new function here
 
-        //Updates repCounter, current scene, and starts counter
-        //Debug.LogError("REPS updated");
-        //Debug.LogError("sceneObject.numRepetitions: "+sceneObject.numRepetitions);
+        // Updates repCounter, current scene, and starts counter
         repCounter.text = $"{variableObject.counterScene}/{sceneObject.numRepetitions}";
         currentScene = SceneManager.GetSceneByBuildIndex(swipeHandler.levelIndex).name;
         variableObject.currentScene = currentScene;
         SaveVariableData();
 
-        //Debug.LogError("sceneObject.bestTime: " + sceneObject.bestTime);
-        
         // Wait for 3 seconds for animation/starttime
         bool enableOptionalWait = true;
         if (enableOptionalWait && variableObject.counterScene == 0)
         {
             StartCoroutine(WaitThreeSeconds());
         }
-        //Vars for beatScoreBar
+
+        // Vars for beatScoreBar
         startTime = Time.time;
         totalTimeToBeatScore = sceneObject.bestTime - variableObject.timeElapsed;
         repPaceTime = totalTimeToBeatScore / (sceneObject.numRepetitions - variableObject.counterScene);
-        // Start coroutine to check after 5 seconds
-        //StartCoroutine(CheckUISceneAfterDelay());
         AssignImprovementWindowAttributes();
     }
     IEnumerator WaitThreeSeconds()
@@ -144,8 +129,8 @@ public class SceneCompleteMenu : MonoBehaviour
             elapsedTimeFinal = Time.time - startTime;
             variableObject.timeElapsed += elapsedTimeFinal;//(int)
             //Green shift for correct input
-            Color32 shiftColor = new Color32(42, 210, 0, 50);
-            StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+            Color32 shiftColor = new Color32(20, 210, 20, 50);
+            StartCoroutine(ShowColoredImage(shiftColor, 0.35f));
         }
         else if (paceBarBool)
         {
@@ -168,6 +153,28 @@ public class SceneCompleteMenu : MonoBehaviour
             }
         }
     }
+
+    public void DefineSwipe_AnimationHandler()
+    {
+        GameObject transitionAnimationsObject = GameObject.Find("TransitionAnimations");
+        if (transitionAnimationsObject != null)
+        {
+            swipeHandler = transitionAnimationsObject.GetComponent<SwipeHandler>();
+            if (swipeHandler == null)
+            {
+                //Debug.LogError("Animator component not found");
+            }
+            else
+            {
+                //Debug.LogError("Animator component found");
+            }
+        }
+        else
+        {
+            //Debug.LogError("transitionAnimationsObject not found.");
+        }
+    }
+
     // Method to start the coroutine that creates a colored image
     public void DisplayColoredImage(Color32 color, float duration)
     {
@@ -293,7 +300,7 @@ public class SceneCompleteMenu : MonoBehaviour
         minutes = sceneObject.bestTime / 60; //sceneObject.bestTime
         seconds = sceneObject.bestTime % 60;
         timeString = $"{(int)minutes}:{Math.Round(seconds, 2)}";
-        besttimeText.text = timeString;
+        //besttimeText.text = timeString;
 
         AssignImprovementWindowAttributes();
 
@@ -351,7 +358,10 @@ public class SceneCompleteMenu : MonoBehaviour
         variableObject.timeElapsed = 0;
         variableObject.currentScene = SceneManager.GetActiveScene().name;
         SaveVariableData();
+        DefineSwipe_AnimationHandler(); 
         swipeHandler.triggerTransitionByUpdate_SceneName = "speed";
+
+        //Debug.LogError("Nigga");
     }
 
     public void BeginPreviousScene()
@@ -396,10 +406,10 @@ public class SceneCompleteMenu : MonoBehaviour
         List<string> completedLevelTextList = GetStringListFromFile();
         foreach (string level in completedLevelTextList)
         {
-            Debug.LogError(level);
+            //Debug.LogError(level);
         }
         string thisScene = SceneManager.GetActiveScene().name;
-        Debug.LogError(thisScene);
+        //Debug.LogError(thisScene);
         int index = levelOrder.IndexOf(thisScene);
         string nextScene = null;
 
@@ -418,7 +428,7 @@ public class SceneCompleteMenu : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Scene not completed");
+            //Debug.LogError("Scene not completed");
             // If player has not completed the scene, trigger animation
             // Else player has to complete this level
 
@@ -468,13 +478,13 @@ public class SceneCompleteMenu : MonoBehaviour
         if (enabled)
         {
             // Show the TextMeshPro objects
-            besttimeText.gameObject.SetActive(true);
+            //besttimeText.gameObject.SetActive(true);
             timeText.gameObject.SetActive(true);
         }
         else
         {
             // Hide the TextMeshPro objects
-            besttimeText.gameObject.SetActive(false);
+            //besttimeText.gameObject.SetActive(false);
             timeText.gameObject.SetActive(false);
         }
     }
@@ -484,11 +494,14 @@ public class SceneCompleteMenu : MonoBehaviour
         {
             // Show the pace bar
             beatScoreBar.gameObject.SetActive(true);
+            //backgroundBar.color = new Color32(31, 31, 31, 255); //"#2B2B2B";
+            
         }
         else
         {
             // Hide the pace bar
             beatScoreBar.gameObject.SetActive(false);
+            //backgroundBar.color = new Color32(255, 255, 255, 255);
         }
     }
 
@@ -561,7 +574,7 @@ public class SceneCompleteMenu : MonoBehaviour
 
             if (minutes != 10)
             {
-                ratingColorPrevious = new Color32(210, 0, 0, 255);
+                ratingColorPrevious = new Color32(207, 52, 35, 255);
                 previousRatingInteger = 1;
             }
             else if (PrevTime <= sceneObject.goldTime)
@@ -576,7 +589,7 @@ public class SceneCompleteMenu : MonoBehaviour
             }
             else
             {
-                ratingColorPrevious = new Color32(210, 0, 0, 255);
+                ratingColorPrevious = new Color32(255, 255, 255, 255);
                 previousRatingInteger = 0;
                 ImprovPrevTime.text = "n/a";
                 //ImprovPrevTime.color = new Color(ImprovPrevTime.color.r, ImprovPrevTime.color.g, ImprovPrevTime.color.b, 0);
@@ -596,10 +609,10 @@ public class SceneCompleteMenu : MonoBehaviour
                     ImprovBestTime.text = $"{Math.Round(seconds, 2)}sec";
                 else
                     ImprovBestTime.text = $"{(int)minutes}min {Math.Round(seconds, 2)}sec";
-                ImprovBestTime.color = ratingColor;
+                //ImprovBestTime.color = ratingColor;
                 toggle_ImprovementWindow();
 
-                Debug.LogError("previousRatingInteger: "+ previousRatingInteger +"completionRating: "+ completionRating);
+                //Debug.LogError("previousRatingInteger: "+ previousRatingInteger +"completionRating: "+ completionRating);
 
                 //ImprovPercentage.text = $"Improvement: {Math.Round(PercentageImprovement, 2)}%";
                 
@@ -645,9 +658,11 @@ public class SceneCompleteMenu : MonoBehaviour
         {
             ImprovementWindow.SetActive(true);
         }
-
     }
+    
 
+
+    // testing program for Improvement window
     void Testing_ImprovementBars()
     {
         sceneCanvasGroup.alpha = 1f;
@@ -670,32 +685,32 @@ public class SceneCompleteMenu : MonoBehaviour
     private float variableHeight = 500f; // You can adjust this value
     private float width = 30f; // Static width for the example
     public Sprite BarsImprovementThing; // Assign a sprite in the inspector or script
-    private Vector2 offset = new Vector2(314f, 403f); // Offset from center
-    private float xOffset = 115;
+    private Vector2 offset = new Vector2(-233.2f, 313f); // Offset from center
+    private float xOffset = 265; // Not an x Offset
     //private 
 
     void Generate_improvementBars(float improvementPercentage)
     {
         float improvement = 1 - (improvementPercentage / 100);
 
-        Debug.LogError($"improvement {improvement}");
+        //Debug.LogError($"improvement {improvement}");
         // Create the image GameObject
         GameObject newImageObject = new GameObject("Improvement Bar Reference");
+
+
         
-        // Add Image component
+        // Add Image to Improvement Bar
         Image imageComponent = newImageObject.AddComponent<Image>();
         imageComponent.sprite = BarsImprovementThing; // Assign the sprite
-        imageComponent.color = ratingColorPrevious;
+        imageComponent.color = new Color32(255, 112, 67, 255);//ratingColorPrevious;
 
-        // Set the rect transform for the image
+        // Set the transform for Improvement Bar
         RectTransform rectTransform = newImageObject.GetComponent<RectTransform>();
         rectTransform.sizeDelta = new Vector2(variableHeight, width); // Set the size
         rectTransform.anchorMin = new Vector2(0.5f, 0f); // Center the image in the canvas
         rectTransform.anchorMax = new Vector2(0.5f, 0f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        rectTransform.localEulerAngles = new Vector3(0, 0, 90); // Rotate 90 degrees around Z-axis
-        
-        // Make sure the image respects the canvas's scale
+        rectTransform.localEulerAngles = new Vector3(0, 0, 0);
         rectTransform.localScale = Vector3.one;
 
         // Set the parent of the new image object
@@ -709,31 +724,50 @@ public class SceneCompleteMenu : MonoBehaviour
         
         // Add Image component
         imageComponent = diffImageObject.AddComponent<Image>();
+        imageComponent.type = Image.Type.Filled;
+        imageComponent.fillMethod = Image.FillMethod.Horizontal;
+        imageComponent.fillAmount = improvement;
         imageComponent.sprite = BarsImprovementThing; // Assign the sprite
-        imageComponent.color = ratingColor;
+        imageComponent.color = new Color32(255, 112, 67, 255);//ratingColor;
         
         // Set the rect transform for the image
         rectTransform = diffImageObject.GetComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(variableHeight * improvement, width); // Set the size
+        rectTransform.sizeDelta = new Vector2(variableHeight, width); // Set the size
         rectTransform.anchorMin = new Vector2(0.5f, 0f); // Center the image in the canvas
         rectTransform.anchorMax = new Vector2(0.5f, 0f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        rectTransform.localEulerAngles = new Vector3(0, 0, 90); // Rotate 90 degrees around Z-axis
-        
-        // Make sure the image respects the canvas's scale
+        rectTransform.localEulerAngles = new Vector3(0, 0, 0);
         rectTransform.localScale = Vector3.one;
 
         // Set the parent of the new image object
         diffImageObject.transform.SetParent(parentOfImprovementBars.transform, false);
 
         // Position the image within the parent canvas with an offset
-        float yAdjustmentForFloor = (variableHeight - (variableHeight * improvement))/2;
-        rectTransform.anchoredPosition = offset + new Vector2(xOffset, 0f - yAdjustmentForFloor);
+        //y offset is actually x offset
+        //float yAdjustmentForFloor = ((variableHeight - (variableHeight * improvement))/2)*-1;
+        rectTransform.anchoredPosition = offset + new Vector2(0, xOffset);
+        //Debug.LogError($"Impotysny: {offset + new Vector2(0f - yAdjustmentForFloor, xOffset)}");
 
         //adjust for height
 
     }
 
+    // This is the method the button will call
+    public void UpdateHeart()
+    { 
+        bool heartfull = !sceneObject.heartScene;
+        if (heartfull)
+        {
+            heartImage.sprite = fullheartsprite;
+        }
+        else
+        {
+            heartImage.sprite = heartsprite;
+            //Debug.LogWarning("ImageChanger: Missing Image or Sprite reference!");
+        }
+        sceneObject.heartScene = heartfull;
+        SaveSceneData();
+    }
     [Serializable]
     public class SceneData
     {
@@ -742,6 +776,7 @@ public class SceneCompleteMenu : MonoBehaviour
         public int goldTime;
         public int perfTime;
         public int numRepetitions;
+        public bool heartScene;
     }
     public void LoadSceneData()
     {
@@ -770,14 +805,14 @@ public class SceneCompleteMenu : MonoBehaviour
         filePath = Path.Combine(Application.persistentDataPath, variablejsonFilePath);
         variableJsonString = File.ReadAllText(filePath);
         variableObject = JsonUtility.FromJson<VariableData>(variableJsonString);
-        Debug.LogError("Load - variableJsonString: " + variableJsonString);
+        //Debug.LogError("Load - variableJsonString: " + variableJsonString);
     }
     public void SaveVariableData()
     {
         filePath = Path.Combine(Application.persistentDataPath, variablejsonFilePath);
         string variableJsonString = JsonUtility.ToJson(variableObject);
         File.WriteAllText(filePath, variableJsonString);
-        Debug.LogError("Saving - variableJsonString: " + variableJsonString);
+        //Debug.LogError("Saving - variableJsonString: " + variableJsonString);
     }
 
     [Serializable]
@@ -802,7 +837,15 @@ public class SceneCompleteMenu : MonoBehaviour
         public string FractionFromShape;
         public string FractionEqualize;
         public string FractionEqualizeHard;
+        public string PercentEqualize;
+        public string FractionReduction;
         public string LongDivision;
+        public string PEMDAS;
+        public string PemdasHard;
+        public string Exponent;
+        public string LineFormulation;
+        public string Factoring;
+        public string RollingHardProblems;
     }
     
     //For AllSceneRatingsData
@@ -835,7 +878,15 @@ public class SceneCompleteMenu : MonoBehaviour
             { "FractionFromShape", allSceneRatingObject.FractionFromShape},
             { "FractionEqualize", allSceneRatingObject.FractionEqualize},
             { "FractionEqualizeHard", allSceneRatingObject.FractionEqualizeHard},
-            { "LongDivision", allSceneRatingObject.LongDivision}
+            { "PercentEqualize", allSceneRatingObject.PercentEqualize},
+            { "FractionReduction", allSceneRatingObject.FractionReduction},
+            { "LongDivision", allSceneRatingObject.LongDivision},
+            { "PEMDAS", allSceneRatingObject.PEMDAS},
+            { "PemdasHard", allSceneRatingObject.PemdasHard},
+            { "Exponent", allSceneRatingObject.Exponent},
+            { "LineFormulation", allSceneRatingObject.LineFormulation},
+            { "Factoring", allSceneRatingObject.Factoring},
+            { "RollingHardProblems", allSceneRatingObject.RollingHardProblems}
         };
 
         allSceneRatingDictionary[key] = rating.ToString();
@@ -863,7 +914,15 @@ public class SceneCompleteMenu : MonoBehaviour
         allSceneRatingObject.FractionFromShape = dictionary["FractionFromShape"];
         allSceneRatingObject.FractionEqualize = dictionary["FractionEqualize"];
         allSceneRatingObject.FractionEqualizeHard = dictionary["FractionEqualizeHard"];
+        allSceneRatingObject.PercentEqualize = dictionary["PercentEqualize"];
+        allSceneRatingObject.FractionReduction = dictionary["FractionReduction"];
         allSceneRatingObject.LongDivision = dictionary["LongDivision"];
+        allSceneRatingObject.PEMDAS = dictionary["PEMDAS"];
+        allSceneRatingObject.PemdasHard = dictionary["PemdasHard"];
+        allSceneRatingObject.Exponent = dictionary["Exponent"];
+        allSceneRatingObject.LineFormulation = dictionary["LineFormulation"];
+        allSceneRatingObject.Factoring = dictionary["Factoring"];
+        allSceneRatingObject.RollingHardProblems = dictionary["RollingHardProblems"];
 
         //saveData
         filePath = Path.Combine(Application.persistentDataPath, allSceneRatingsjsonFilePath);

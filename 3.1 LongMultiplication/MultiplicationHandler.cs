@@ -126,8 +126,7 @@ public class MultiplicationHandler : MonoBehaviour
     {
         if (mobileVersion)
         {
-            inputText.text = KeyboardInputText.text;//.ToString();
-            KeyboardInputText.text = "";
+            inputText.text = KeyboardInputText.text;
         }
 
         if (inputText.text == currentAnswer.ToString())
@@ -158,13 +157,37 @@ public class MultiplicationHandler : MonoBehaviour
                 Num4text.text = inputText.text;
                 confirmNextEqAndAnswer();
             }
+
+            if (mobileVersion)
+            {
+                KeyboardInputText.text = "";
+            }
+            else
+            {
+                inputText.text = "";
+            }
         }
         else
         {
-            Handheld.Vibrate();
-            Color32 shiftColor = new Color32(210, 0, 0, 50);
-            StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
-            ResetScene();
+            if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
+            {
+                // Best rating is bad, so punish
+                Handheld.Vibrate();
+                Color32 shiftColor = new Color32(210, 0, 0, 50);
+                StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+                ResetScene();
+                if (mobileVersion)
+                {
+                    KeyboardInputText.text = "";
+                }
+                else
+                {
+                    inputText.text = "";
+                }
+            }
+            else
+            {
+            }
         }
     }
     public void confirmNextEqAndAnswer()

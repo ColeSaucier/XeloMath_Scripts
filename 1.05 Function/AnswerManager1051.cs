@@ -124,15 +124,20 @@ public class AnswerManager1051 : AnswerManagerBase
                     sceneCompleteScript.SceneComplete = true;
                     Button.image.color = Color.green;
                 }
+                // Reset input
+                KeyboardInputText.text = "";
             }
             else
             {
-                Handheld.Vibrate();
-                Color32 shiftColor = new Color32(210, 0, 0, 50);
-                base.DisplayColoredImage(shiftColor, 0.2f);
+                if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
+                {
+                    Handheld.Vibrate();
+                    Color32 shiftColor = new Color32(210, 0, 0, 50);
+                    base.DisplayColoredImage(shiftColor, 0.2f);
+                    // Reset input
+                    KeyboardInputText.text = "";
+                }
             }
-            // Reset input
-            KeyboardInputText.text = "";
         }
         else
         {

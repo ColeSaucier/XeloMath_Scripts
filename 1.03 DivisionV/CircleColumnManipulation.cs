@@ -13,6 +13,7 @@ public class CircleColumnManipulation : MonoBehaviour
     public TextMeshProUGUI num2Text; // Reference to TextMeshPro for randomNum2
     public TextMeshProUGUI ColumnsNum;
     public TextMeshProUGUI ArrayRowNum;
+    public TextMeshProUGUI TopArrayColumnNum;
 
     public int internalColumn;
     public int numerator;
@@ -64,9 +65,22 @@ public class CircleColumnManipulation : MonoBehaviour
 
     void UpdateCalculation()
     {
-        // Calculate numberOfRows and remainder
-        numberOfRows = numerator / internalColumn;
-        remainder = numerator % internalColumn;
+        // Calculate numberOfRows and remainderPrefab
+        try
+        {
+            numberOfRows = numerator / internalColumn;
+            remainder = numerator % internalColumn;
+
+            TopArrayColumnNum.text = numberOfRows.ToString();
+            if (remainder == 0)
+                TopArrayColumnNum.text = numberOfRows.ToString();
+            else
+                TopArrayColumnNum.text = $"{numberOfRows.ToString()}<color=#CF3423>r{remainder.ToString()}</color>";
+        }
+        catch
+        {
+            TopArrayColumnNum.text = "Error";
+        }
     }
 
     void GenerateObjectsGrid()

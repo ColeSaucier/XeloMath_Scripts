@@ -38,6 +38,12 @@ public class InputUserHandling : MonoBehaviour
     public string playerjsonFilePath;
     private string playerjsonString;
     private PlayerData playerObject;
+    public SceneData sceneObject;
+    public string scenejsonFilePath;
+    private string sceneJsonString;
+    private AllSceneRatingsData allSceneRatingObject;
+    public string allSceneRatingsjsonFilePath;
+    private string allSceneRatingsJsonString;
 
     public TextMeshProUGUI MenuGradeText;
     public TextMeshProUGUI MenuUsername;
@@ -50,7 +56,7 @@ public class InputUserHandling : MonoBehaviour
         playerObject = new PlayerData();
         LoadPlayerData();
 
-        supabase = new Client("https://acpornqddkzqsdppbabw.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjcG9ybnFkZGt6cXNkcHBiYWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM2NTU5MzcsImV4cCI6MjAyOTIzMTkzN30.UQ73w2nx-UxmXhxBF2_jSTl19aZ1bjb9LjYY4eraMtY");
+        supabase = new Client("https://crynucdigbnxdsnywawe.supabase.co", "sb_publishable_rXQIggagT9rQEGPMiGnyIg_JXVp2yww");
         if (playerObject.user == "null")
         {
             canvas.alpha = 1f;
@@ -171,13 +177,13 @@ public class InputUserHandling : MonoBehaviour
         {
             if (!(await ValidateUsernameSupabase(usernameInputField)))
             {
-                Debug.LogError("User not exists");
+                //Debug.LogError("User not exists");
                 usernameImageC.gameObject.SetActive(true);
                 usernameImageX.gameObject.SetActive(false);
             }
             else
             {
-                Debug.LogError("User exists");    
+                //Debug.LogError("User exists");    
                 usernameImageX.gameObject.SetActive(true);
                 usernameImageC.gameObject.SetActive(false);
             }
@@ -189,13 +195,13 @@ public class InputUserHandling : MonoBehaviour
         bool exists = await ValidateUsernameSupabase(haveUsernameInputField);
         if (exists)
         {
-            Debug.LogError("User exists"); 
+            //Debug.LogError("User exists"); 
             alreadyusernameImageC.gameObject.SetActive(true);
             alreadyusernameImageX.gameObject.SetActive(false);
         }
         else
         {
-            Debug.LogError("User not exists");
+            //Debug.LogError("User not exists");
             alreadyusernameImageX.gameObject.SetActive(true);
             alreadyusernameImageC.gameObject.SetActive(false);
         }
@@ -226,6 +232,7 @@ public class InputUserHandling : MonoBehaviour
                 playerObject.user = haveUsernameInputField.text;
                 MenuGradeText.text = playerObject.menuText; //Default "math goat"
                 MenuUsername.text = $"Player/Username: {playerObject.user}";
+                GetBestRatingForALLLevels_ByUser(haveUsernameInputField.text);
 
                 SaveVariableData();
             }
@@ -281,6 +288,145 @@ public class InputUserHandling : MonoBehaviour
             canvas.blocksRaycasts = false;
         }
     }
+    // Class to represent a all players best level entry
+    private class PlayerSceneDatas
+    {
+        public string level { get; set; }
+        public decimal duration { get; set; }
+    }
+    private async Task GetBestRatingForALLLevels_ByUser(string user)
+    {
+        // Call the get_leaderboard_data function
+        var baseResponse = await supabase.Rpc("get_update_user_data", new Dictionary<string, object>
+        {
+            { "p_user_name", user }
+        });
+        Debug.LogError("RPC call for DATA!!!!!!!!!!!!!!!!!!!");
+
+
+        // Check if response is successful and contains data
+        if (baseResponse != null)
+        {
+            Debug.LogError("FOLLOWED THROUGH RPC call for DATA!!!!!!!!!!!!!!!!!!!");
+            // Parse the JSON string into a list of leaderboard entries
+            var playerSceneDatas = JsonConvert.DeserializeObject<List<PlayerSceneDatas>>(baseResponse.Content.ToString());
+
+            // Loop through each leaderboard entry (best performance)
+            Dictionary<string, string> allSceneDataDictionary = new Dictionary<string, string>();  //Dictionary for All Scene data 
+            for (int i = 0; i < playerSceneDatas.Count; i++)
+            {
+                try
+                {
+                    //Update scene object
+                    scenejsonFilePath = playerSceneDatas[i].level + ".json";
+                    float durationOfParticularLevel = (float)playerSceneDatas[i].duration;
+                    LoadSceneData();
+
+
+                    //Determine Rating
+                    int completionRating = 1;
+                    if (durationOfParticularLevel <= sceneObject.goldTime)
+                    {
+                        completionRating = 2;
+                    }
+                    else if (durationOfParticularLevel <= sceneObject.perfTime)
+                    {
+                        completionRating = 3;
+                    }
+
+                    //Change Rating
+                    sceneObject.bestRating = completionRating.ToString();
+                    sceneObject.bestTime = durationOfParticularLevel;
+                    Debug.LogError($"playerSceneDatas[i].level: {playerSceneDatas[i].level}, completionRating: {completionRating.ToString()}");
+                    allSceneDataDictionary.Add(playerSceneDatas[i].level, completionRating.ToString());
+                    //Save
+                    SaveSceneData();
+
+                    // Add level to completed levels
+                    Debug.LogError("GETTING TO THE IMPORTANT SHIT");
+                    completedLevelTextList.Add(playerSceneDatas[i].level.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Crash in loop index {i}: {ex.Message}\nStack: {ex.StackTrace}");
+                }
+            }
+
+            // Save (overwrites file, creates if missing)
+            //string filePath = Application.persistentDataPath + "/CompletedLevel.txt";
+            //File.WriteAllLines(filePath, completedLevelTextList);
+
+            // Convert list to a single string (one level per line)
+            string levelsString = string.Join(Environment.NewLine, completedLevelTextList);
+            Debug.LogError($"Saving? {levelsString}");
+
+            // Full path
+            string filePath = Path.Combine(Application.persistentDataPath, "CompletedLevel.txt");
+            Debug.LogError($"Saving? {levelsString}");
+
+            // Save (overwrites file, creates if missing)
+            File.WriteAllText(filePath, levelsString);
+
+            Debug.LogError("FOLLOWED THROUGH2 RPC call for DATA!!!!!!!!!!!!!!!!!!!");
+            ConvertDictionaryToJson__SaveIt_RegardlessOfNull(allSceneDataDictionary);
+        }
+        else
+        {
+            //Debug.LogError("Failed to fetch user data: " + baseResponse.ResponseMessage.StatusCode);
+        }
+    }
+    private void LoadAllSceneRatingsData()
+    {
+        //retrieve data and create dataObject
+        filePath = Path.Combine(Application.persistentDataPath, allSceneRatingsjsonFilePath); // Combine with the Assets folder
+        allSceneRatingsJsonString = File.ReadAllText(filePath);
+        allSceneRatingObject = JsonUtility.FromJson<AllSceneRatingsData>(allSceneRatingsJsonString);
+    }
+    public void ConvertDictionaryToJson__SaveIt_RegardlessOfNull(Dictionary<string, string> dictionary)
+    {
+        allSceneRatingObject = new AllSceneRatingsData();
+
+        // Helper to get value or default "0"
+        string GetOrZero(string key)
+        {
+            return dictionary.TryGetValue(key, out var value) ? value : "0";
+        }
+
+        // Assign every field — missing ones become "0"
+        allSceneRatingObject.NumberCounting          = GetOrZero("NumberCounting");
+        allSceneRatingObject.NumberCountingScattered = GetOrZero("NumberCountingScattered");
+        allSceneRatingObject.BasicAddition           = GetOrZero("BasicAdditionV");          // note: key has V
+        allSceneRatingObject.BasicSubtraction        = GetOrZero("BasicSubtractionV");
+        allSceneRatingObject.ShapePatterns           = GetOrZero("ShapePatterns");
+        allSceneRatingObject.SmallerOrBigger         = GetOrZero("SmallerOrBigger");
+        allSceneRatingObject.Clock                   = GetOrZero("Clock");
+        allSceneRatingObject.PlaceValues             = GetOrZero("PlaceValues");
+        allSceneRatingObject.AdditionV               = GetOrZero("AdditionV");
+        allSceneRatingObject.AdditionFunctionBox     = GetOrZero("AdditionFunctionBox");
+        allSceneRatingObject.SubtractionFunctionBox  = GetOrZero("SubtractionFunctionBox");
+        allSceneRatingObject.NormalAddition          = GetOrZero("NormalAddition");
+        allSceneRatingObject.NormalSubtraction       = GetOrZero("NormalSubtraction");
+        allSceneRatingObject.MultiplicationV         = GetOrZero("MultiplicationV");
+        allSceneRatingObject.DivisionV               = GetOrZero("DivisionV");
+        allSceneRatingObject.LongMultiplication      = GetOrZero("LongMultiplication");
+        allSceneRatingObject.FractionFromShape       = GetOrZero("FractionFromShape");
+        allSceneRatingObject.FractionEqualize        = GetOrZero("FractionEqualize");
+        allSceneRatingObject.FractionEqualizeHard    = GetOrZero("FractionEqualizeHard");
+        allSceneRatingObject.PercentEqualize         = GetOrZero("PercentEqualize");
+        allSceneRatingObject.FractionReduction       = GetOrZero("FractionReduction");
+        allSceneRatingObject.LongDivision            = GetOrZero("LongDivision");
+        allSceneRatingObject.PEMDAS                  = GetOrZero("PEMDAS");
+        allSceneRatingObject.PemdasHard              = GetOrZero("PemdasHard");
+        allSceneRatingObject.Exponent                = GetOrZero("Exponent");
+        allSceneRatingObject.LineFormulation         = GetOrZero("LineFormulation");
+        allSceneRatingObject.Factoring               = GetOrZero("Factoring");
+        allSceneRatingObject.RollingHardProblems     = GetOrZero("RollingHardProblems");
+
+        // Save as before
+        filePath = Path.Combine(Application.persistentDataPath, allSceneRatingsjsonFilePath);
+        string allSceneRatingsJsonString = JsonUtility.ToJson(allSceneRatingObject, true); // true = pretty print
+        File.WriteAllText(filePath, allSceneRatingsJsonString);
+    }
     private void LoadPlayerData()
     {
         //Load the data
@@ -302,7 +448,7 @@ public class InputUserHandling : MonoBehaviour
         string filePath = Path.Combine(Application.persistentDataPath, variablejsonFilePath);
         variableJsonString = File.ReadAllText(filePath);
         variableObject = JsonUtility.FromJson<VariableData>(variableJsonString);
-        Debug.LogError("variableJsonString - Load: " + variableJsonString);
+        //Debug.LogError("variableJsonString - Load: " + variableJsonString);
     }
 
     private void SaveVariableData()
@@ -311,12 +457,34 @@ public class InputUserHandling : MonoBehaviour
         string filePath = Path.Combine(Application.persistentDataPath, variablejsonFilePath);
         variableJsonString = JsonUtility.ToJson(variableObject);
         File.WriteAllText(filePath, variableJsonString);
-        Debug.LogError("variableJsonString - Save: " + variableJsonString);
+        //Debug.LogError("variableJsonString - Save: " + variableJsonString);
     }
-
+    public void LoadSceneData()
+    {
+        filePath = Path.Combine(Application.persistentDataPath, scenejsonFilePath);
+        sceneJsonString = File.ReadAllText(filePath);
+        sceneObject = JsonUtility.FromJson<SceneData>(sceneJsonString);
+    }
+    public void SaveSceneData()
+    {
+        filePath = Path.Combine(Application.persistentDataPath, scenejsonFilePath);
+        string sceneJsonString = JsonUtility.ToJson(sceneObject);
+        File.WriteAllText(filePath, sceneJsonString);
+        Debug.LogError($"LOADED scenedata: {sceneJsonString}");
+    }
+    [Serializable]
+    public class SceneData
+    {
+        public float bestTime;
+        public string bestRating;
+        public int goldTime;
+        public int perfTime;
+        public int numRepetitions;
+        public bool heartScene;
+    }
     public async Task InsertUserAsync()
     {
-        Debug.LogError($"line inserted!!");
+        //Debug.LogError($"line inserted!!");
         int index = dropdown.value;
         // Get the text of the current selected item, based on the index
         string GradeselectedText = dropdown.options[index].text;
@@ -337,11 +505,11 @@ public class InputUserHandling : MonoBehaviour
         try
         {
             var response = await supabase.Rpc("insert_player", parameters);
-            Debug.LogError("User inserted successfully.");
+            //Debug.LogError("User inserted successfully.");
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Error inserting user: {ex.Message}");
+            //Debug.LogError($"Error inserting user: {ex.Message}");
         }
     }
 
@@ -354,22 +522,23 @@ public class InputUserHandling : MonoBehaviour
     {
         string username = input.text.ToString();
         // Call the CheckUserNameValid function using Supabase's RPC
+        Debug.LogError($"username {username}");
         var response = await supabase.Rpc("checkusernamevalidtest", new Dictionary<string, object>
         {
             { "username_param", username} 
         });
         if (response != null)
         {
-            Debug.LogError($"Making RPC Call with: {JsonConvert.SerializeObject(new Dictionary<string, object> { { "username_param", username } })}");
+            //Debug.LogError($"Making RPC Call with: {JsonConvert.SerializeObject(new Dictionary<string, object> { { "username_param", username } })}");
             // Parse the result from the response
             bool isValid = JsonConvert.DeserializeObject<bool>(response.Content.ToString());
-            Debug.LogError($"Output: {isValid}");
+            //Debug.LogError($"Output: {isValid}");
             return isValid;
         }
         else
         {
             // Handle error - response is null
-            Debug.LogError("Failed to call CheckUserNameValid function.");
+            //Debug.LogError("Failed to call CheckUserNameValid function.");
             return false;
         }
     }
@@ -393,9 +562,42 @@ public class InputUserHandling : MonoBehaviour
         public bool timeEnabled;
         public bool timeEnabledNotPace;
         public bool leaderboardEnabled;
+        public bool swipeHint;
         public string swipeRight;
         public string swipeLeft;
         public string swipeDown;
         public string swipeUp;
+    }
+    [Serializable]
+    public class AllSceneRatingsData
+    {
+        public string NumberCounting;
+        public string NumberCountingScattered;
+        public string BasicAddition;
+        public string BasicSubtraction;
+        public string ShapePatterns;
+        public string SmallerOrBigger;
+        public string Clock;
+        public string PlaceValues;
+        public string AdditionV;
+        public string AdditionFunctionBox;
+        public string SubtractionFunctionBox;
+        public string NormalAddition;
+        public string NormalSubtraction;
+        public string MultiplicationV;
+        public string DivisionV;
+        public string LongMultiplication;
+        public string FractionFromShape;
+        public string FractionEqualize;
+        public string FractionEqualizeHard;
+        public string PercentEqualize;
+        public string FractionReduction;
+        public string LongDivision;
+        public string PEMDAS;
+        public string PemdasHard;
+        public string Exponent;
+        public string LineFormulation;
+        public string Factoring;
+        public string RollingHardProblems;
     }
 }

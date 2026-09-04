@@ -101,8 +101,11 @@ public class DivisionHandler : MonoBehaviour
     {
         if (mobileVersion)
         {
-            inputText.text = KeyboardInputText.text;//.ToString();
-            KeyboardInputText.text = "";
+            if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
+            {
+                inputText.text = KeyboardInputText.text;//.ToString();
+                KeyboardInputText.text = "";
+            }
         }
 
         // Scene ALMOST complete circumstance
@@ -116,11 +119,14 @@ public class DivisionHandler : MonoBehaviour
 
             else
             {
-                //Number not valid, restart
-                Handheld.Vibrate();
-                ResetScene();
-                Color32 shiftColor = new Color32(210, 0, 0, 50);
-                StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+                if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
+                {
+                    //Number not valid, restart
+                    Handheld.Vibrate();
+                    ResetScene();
+                    Color32 shiftColor = new Color32(210, 0, 0, 50);
+                    StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+                }
             }
         }
 
@@ -206,13 +212,17 @@ public class DivisionHandler : MonoBehaviour
             }
             else
             {
-                //Number not valid, restart
-                ResetScene();
-                Color32 shiftColor = new Color32(210, 0, 0, 50);
-                StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+                if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
+                {
+                    //Number not valid, restart
+                    ResetScene();
+                    Color32 shiftColor = new Color32(210, 0, 0, 50);
+                    StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+                }
             }
         }
     }
+    /*
     public void activateInput()
     {
         isInputActive = true;
@@ -222,7 +232,7 @@ public class DivisionHandler : MonoBehaviour
         popUpCanvasGroup.alpha = 1f;
         popUpCanvasGroup.interactable = true; // Enable interactions with the pop-up canvas
         Button.image.color = Color.grey;
-    }
+    }*/
 
     void validateInput(string input)
     {
@@ -246,11 +256,14 @@ public class DivisionHandler : MonoBehaviour
         }
         else
         {
-            subtractInput = 1009;
-            //Number not valid, restart
-            ResetScene();
-            Color32 shiftColor = new Color32(210, 0, 0, 50);
-            StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+            if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
+            {
+                subtractInput = 1009;
+                //Number not valid, restart
+                ResetScene();
+                Color32 shiftColor = new Color32(210, 0, 0, 50);
+                StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+            }
         }
     }
 

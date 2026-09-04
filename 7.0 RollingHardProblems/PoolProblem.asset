@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e2e2318533cdee478cc197dc2db33bc, type: 3}
+  m_Name: PoolProblem
+  m_EditorClassIdentifier: 
+  displayImage: {fileID: 21300000, guid: fc96920d44bf1e54fad0c24adeec776f, type: 3}
+  displayText: Pool balls are numbered 1 through 15. <br> Add them up, bonus points
+    for coming up with a fast way to do so. <br> Hint, average two numbers. How can
+    they be equal?
+  solutionImage: {fileID: 21300000, guid: fc96920d44bf1e54fad0c24adeec776f, type: 3}
+  solutionText: 120 <br> Fastest way to solve this is by calculating the average
+    of the numbers. <br> Average(1,15) = 8 <br> 8 * 15 = 80 + 40 = 120

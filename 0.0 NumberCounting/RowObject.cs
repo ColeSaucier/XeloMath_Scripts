@@ -19,6 +19,7 @@ public class RowObject : MonoBehaviour
 
     public float xOffset = 0f; // Offset for the x position of the generated boxes
     public float yOffset = 0f; // Offset for the y position of the generated boxes
+    public SceneCompleteMenu backend;
 
     void Start()
     {

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e2e2318533cdee478cc197dc2db33bc, type: 3}
+  m_Name: CircularFountain
+  m_EditorClassIdentifier: 
+  displayImage: {fileID: 21300000, guid: aa67dfa696fd90b4ab7a0d97e94a7456, type: 3}
+  displayText: A contractor is building the base of a circular fountain, on the blueprint
+    the base has a diameter of 18cm.<br>The blueprint's SCALE is 3cm to 4 feet.<br>What
+    will the area of the fountain be in square feet? Leave multiplicative pi in your
+    answer.<br>  Diameter = 2r<br>Area(circle) = r<sup>2</sup>pi
+  solutionImage: {fileID: 21300000, guid: aa67dfa696fd90b4ab7a0d97e94a7456, type: 3}
+  solutionText: '18cm in plan = 18 * (4/3) feet in reality<br> NOTE: Scale must be
+    converted, remember that if you want feet you must divide by the cm first.<br>
+    24diameter = 12 radius <br> 12<sup>2</sup>pi = 144pi feet<sup>2</sup>'

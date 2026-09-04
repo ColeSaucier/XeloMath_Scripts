@@ -21,6 +21,8 @@ public class FractionMobileKeyboardController01 : MonoBehaviour
     public Image questionMark_step1;
     public Image questionMark_step2;
 
+    public Button answerbutton;
+    public SceneCompleteMenu sceneCompleteScript;
     // Call this method in Update to handle blinking
     void Update()
     {
@@ -67,6 +69,23 @@ public class FractionMobileKeyboardController01 : MonoBehaviour
             blinkingEnabled_step2 = true;
             numerator.text += number.ToString();
         }
+        if (int.TryParse(sceneCompleteScript.sceneObject.bestRating, out int value))
+        {
+            int bestRating = value;
+            //Debug.LogError($"112sceneObject.bestRating {bestRating}");
+            if (bestRating >= 2)
+            {
+                //Debug.LogError($"sceneCompleteScript.sceneObject.bestRating {sceneCompleteScript.sceneObject.bestRating}");
+                answerbutton.onClick.Invoke();
+            }
+        }
+    }
+    public void Reset_QuestionMark_Enable()
+    {
+        questionMark_step1.enabled = true;
+        questionMark_step2.enabled = true;
+        blinkingEnabled_step1 = true;
+        blinkingEnabled_step2 = false;
     }
 
     // Function to delete the last character in the text

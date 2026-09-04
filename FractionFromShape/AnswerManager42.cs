@@ -18,6 +18,8 @@ public class AnswerManager42 : AnswerManagerBase
     public TextMeshProUGUI keyboardNumerator;
     public TextMeshProUGUI keyboardDenominator;
 
+    public FractionMobileKeyboardController02 keyboard;
+
 
     // Update is called once per frame
     public override void Update()
@@ -54,27 +56,57 @@ public class AnswerManager42 : AnswerManagerBase
 
         if (mobileVersion)
         {
-            if (secondInput == true)
+            //If rating not good enough
+            if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
             {
-                if (keyboardNumerator.text == copiedNumerator.ToString() && keyboardDenominator.text == copiedDenominator.ToString()) 
+                if (secondInput == true)
                 {
-                    SceneComplete = true;
-                    sceneCompleteScript.SceneComplete = true;
-                    Button.image.color = Color.green;
+                    if (keyboardNumerator.text == copiedNumerator.ToString() && keyboardDenominator.text == copiedDenominator.ToString()) 
+                    {
+                        SceneComplete = true;
+                        sceneCompleteScript.SceneComplete = true;
+                        Button.image.color = Color.green;
+                    }
+                    else
+                    {
+                        Handheld.Vibrate();
+                        secondInput = false;
+                        keyboardNumerator.text = "";
+                        keyboardDenominator.text = "";
+                        keyboard.Reset_QuestionMark_Enable();
+                        Color32 shiftColor = new Color32(210, 0, 0, 50);
+                        base.DisplayColoredImage(shiftColor, 0.2f);
+                    }
                 }
                 else
                 {
-                    Handheld.Vibrate();
-                    secondInput = false;
-                    keyboardNumerator.text = "";
-                    keyboardDenominator.text = "";
-                    Color32 shiftColor = new Color32(210, 0, 0, 50);
-                    base.DisplayColoredImage(shiftColor, 0.2f);
+                    secondInput = true;
                 }
             }
             else
             {
-                secondInput = true;
+                //Rating is high enough for skip
+                if (secondInput == true)
+                {
+                    if (keyboardNumerator.text == copiedNumerator.ToString() && keyboardDenominator.text == copiedDenominator.ToString()) 
+                    {
+                        SceneComplete = true;
+                        sceneCompleteScript.SceneComplete = true;
+                        Button.image.color = Color.green;
+                    }
+                    else
+                    {
+                        // No punish case BUT RESET WRONG
+                        keyboardDenominator.text = "";
+                    }
+                }
+                else
+                {
+                    if (keyboardNumerator.text == copiedNumerator.ToString())
+                    {
+                        secondInput = true;
+                    }
+                }
             }
         }
         else

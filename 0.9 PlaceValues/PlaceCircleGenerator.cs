@@ -8,12 +8,13 @@ public class PlaceCircleGenerator : MonoBehaviour
 {
     public GameObject prefab;
     public float spacing = 1f;
-    public float xOffset100 = -1.75f;
-    public float yOffset100 = 0f;
-    public float xOffset10 = -1.75f;
-    public float yOffset10 = 0f;
-    public float xOffset1 = 0f;
-    public float yOffset1 = 0f;
+    public float spacing1s = 0.75f;
+    public float xOffset100;
+    public float yOffset100;
+    public float xOffset10;
+    public float yOffset10;
+    public float xOffset1;
+    public float yOffset1;
     public float zRotationOffset = 0f;
     public GameObject Holder;
 
@@ -68,17 +69,17 @@ public class PlaceCircleGenerator : MonoBehaviour
 
     public void Generate10s()
     {
-        GameObject newParent = new GameObject();
+        GameObject newParent10 = new GameObject();
         for (int i = 0; i < 10; i++)
         {
             GameObject newObject = Instantiate(prefab);
-            newObject.transform.SetParent(newParent.transform);
+            newObject.transform.SetParent(newParent10.transform);
             newObject.transform.localPosition = new Vector3(0, i * spacing, 0);
         }
 
-        ApplyTransformToParent(newParent, counter10, xOffset10, yOffset10);
-        newParent.transform.SetParent(Holder.transform);
-        newParent.name = $"10Object{counter10}";
+        ApplyTransformToParent(newParent10, counter10, xOffset10, yOffset10);
+        newParent10.transform.SetParent(Holder.transform);
+        newParent10.name = $"10Object{counter10}";
         counter10++;
     }
 

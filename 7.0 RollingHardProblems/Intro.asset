@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e2e2318533cdee478cc197dc2db33bc, type: 3}
+  m_Name: Intro
+  m_EditorClassIdentifier: 
+  displayImage: {fileID: 0}
+  displayText: You have successfully gotten to 7th grade level math! Congrats! <br>
+    Particular congratulations if you're pre 7th grade! Haha! <br> The following
+    problems may require pen and paper or calculator.<br>Feel free to use them, you
+    are past calculatory repetition.<br> Instead of repetition, these are creative
+    and will require you to think outside the box. There are 15.
+  solutionImage: {fileID: 0}
+  solutionText: 

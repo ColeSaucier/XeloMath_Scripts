@@ -114,7 +114,7 @@ public class clickOnAnswerBox0751 : MonoBehaviour
                     {
                         // Store the last clicked object or reference to the object
                         lastClickedObject = hit.collider.gameObject;
-                        hit.collider.GetComponent<Renderer>().material.color = new Color(210/255f, 0/255f, 0/255f);
+                        hit.collider.GetComponent<Renderer>().material.color = new Color(232/255f, 52/255f, 35/255f);
                         TestPlayerInput();
                     }
                 }

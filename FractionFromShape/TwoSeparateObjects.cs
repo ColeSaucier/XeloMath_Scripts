@@ -180,7 +180,7 @@ public class TwoSeparateObjects : MonoBehaviour
         // Set the color for each vertex
         for (int i = 0; i < numerator; i++)
         {
-            colors[i] = Color.red;
+            colors[i] = Color.
         }
 
         mesh.colors32 = colors;
@@ -312,6 +312,7 @@ public class TwoSeparateObjects : MonoBehaviour
     public int numerator;
     private MeshFilter meshFilter;
     private Color32[] colors;
+    public Color32 calor = new Color32(255, 112, 67, 255);
 
     void Start()
     {
@@ -359,7 +360,7 @@ public class TwoSeparateObjects : MonoBehaviour
             // Set the color for the first three triangles
             if (i < numerator)
             {
-                colors[i] = Color.red;
+                colors[i] = calor;
             }
             else
             {

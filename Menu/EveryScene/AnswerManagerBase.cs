@@ -22,6 +22,7 @@ public abstract class AnswerManagerBase : MonoBehaviour
     public Canvas mobileKeyboard;
     public bool mobileVersion = true;
     public TextMeshProUGUI KeyboardInputText;
+    //private Action functionReference;
 
     public virtual void Update()
     {
@@ -65,16 +66,25 @@ public abstract class AnswerManagerBase : MonoBehaviour
                 {
                     Button.image.color = Color.green;
                 }
+                // Reset input
+                KeyboardInputText.text = "";
             }
             else
             {
-                Handheld.Vibrate();
-                //Green shift for correct input
-                Color32 shiftColor = new Color32(210, 0, 0, 50);
-                StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+                if (KeyboardInputText.text.Length >= answerString.Length)
+                {
+                    if (int.Parse(sceneCompleteScript.sceneObject.bestRating) < 2)
+                    {
+                        print($"answer manager sceneCompleteScript.sceneObject.bestRating {sceneCompleteScript.sceneObject.bestRating}");
+                        Handheld.Vibrate();
+                        //Green shift for correct input
+                        Color32 shiftColor = new Color32(210, 0, 0, 50);
+                        StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+                        // Reset input
+                        KeyboardInputText.text = "";
+                    }
+                }
             }
-            // Reset input
-            KeyboardInputText.text = "";
         }
         else
         {
@@ -84,10 +94,9 @@ public abstract class AnswerManagerBase : MonoBehaviour
                 sceneCompleteScript.SceneComplete = true;
                 Button.image.color = Color.green;
             }
+            // Close answerbox
+            popUpCanvasGroup.alpha = 0f;
         }
-
-        // Close answerbox
-        popUpCanvasGroup.alpha = 0f;
     }
 
     // Method to start the coroutine that creates a colored image

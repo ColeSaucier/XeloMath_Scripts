@@ -78,7 +78,7 @@ public class AnswerManager15 : MonoBehaviour
                     KeyboardInputHour.text = "";
                     KeyboardInputMinute.text = "";
                     Color32 shiftColor = new Color32(210, 0, 0, 50);
-                    StartCoroutine(ShowColoredImage(shiftColor, 0.2f));
+                    DisplayColoredImage(shiftColor, 0.2f);
                 }
             }
 
@@ -143,7 +143,7 @@ public class AnswerManager15 : MonoBehaviour
         }
     }
     // Method to start the coroutine that creates a colored image
-    public virtual void DisplayColoredImage(Color32 color, float duration)
+    public void DisplayColoredImage(Color32 color, float duration)
     {
         StartCoroutine(ShowColoredImage(color, duration));
     }

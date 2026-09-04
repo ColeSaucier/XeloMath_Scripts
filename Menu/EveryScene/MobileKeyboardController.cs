@@ -14,6 +14,8 @@ public class MobileKeyboardController : MonoBehaviour
     private float nextActionTime = 0.0f;
 
     private bool blinkingEnabled = true;
+    public Button answerbutton;
+    public SceneCompleteMenu sceneCompleteScript;
 
 
     // Call this method in Update to handle blinking
@@ -42,6 +44,18 @@ public class MobileKeyboardController : MonoBehaviour
 
         questionMark.enabled = false;
         blinkingEnabled = false;
+        //Debug.LogError($"111sceneObject.bestRating {sceneCompleteScript.sceneObject.bestRating}");
+
+        if (int.TryParse(sceneCompleteScript.sceneObject.bestRating, out int value))
+        {
+            int bestRating = value;
+            //Debug.LogError($"112sceneObject.bestRating {bestRating}");
+            if (bestRating >= 2)
+            {
+                Debug.LogError($"sceneCompleteScript.sceneObject.bestRating {sceneCompleteScript.sceneObject.bestRating}");
+                answerbutton.onClick.Invoke();
+            }
+        }
     }
 
     // Function to delete the last character in the text
@@ -51,6 +65,13 @@ public class MobileKeyboardController : MonoBehaviour
         {
             inputText.text = inputText.text.Substring(0, inputText.text.Length - 1);
             Vibrator.Vibrate(50);
+        }
+    }
+    private void CheckInputForRightMiddleAlignment()
+    {
+        if (inputText.text.Length > 2)
+        {
+            inputText.alignment = TextAlignmentOptions.Center;
         }
     }
 }

@@ -68,7 +68,7 @@ public class SwipeHandler : MonoBehaviour
             }
             return index;
         }
-        Debug.LogError("Action not found in swipe association dictionary.");
+        //Debug.LogError("Action not found in swipe association dictionary.");
         return 0; // Default to 0 if action not found
     }
     private readonly Dictionary<string, int> actionToSceneIndex = new Dictionary<string, int>
@@ -94,7 +94,7 @@ public class SwipeHandler : MonoBehaviour
 
         // Set swipeDown
         swipeDownScene = GetSceneIndex(playerObject.swipeDown, "DownSwipe");
-        //  Debug.LogError("playerObject.swipeDown" + playerObject.swipeDown + "null prolly");
+        //  //Debug.LogError("playerObject.swipeDown" + playerObject.swipeDown + "null prolly");
 
         // Set swipeUp
         swipeUpScene = GetSceneIndex(playerObject.swipeUp, "UpSwipe");
@@ -180,7 +180,7 @@ public class SwipeHandler : MonoBehaviour
         }
         else
         {
-            Debug.LogError("More than one scene is already loaded, not loading additional scene.");
+            //Debug.LogError("More than one scene is already loaded, not loading additional scene.");
         }
         //Debug.LogError($"{SceneManager.GetActiveScene().name} is the current active scene.");
 
@@ -189,7 +189,7 @@ public class SwipeHandler : MonoBehaviour
 
             SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(1));
         }
-        Debug.LogError($"NOW..........{SceneManager.GetActiveScene().name} is the current active scene.");
+        //Debug.LogError($"NOW..........{SceneManager.GetActiveScene().name} is the current active scene.");
     }
     void Update()
     {
@@ -235,7 +235,7 @@ public class SwipeHandler : MonoBehaviour
                         // Check if the hit object has the tag you want to ignore
                         if (result.gameObject.CompareTag("IgnoreSwipe") || result.gameObject.CompareTag("temporary")) {
                             swipeValid = false;
-                            Debug.LogError("Swipe ignored because an object with tag 'YourIgnoreTag' is selected.");
+                            //Debug.LogError("Swipe ignored because an object with tag 'YourIgnoreTag' is selected.");
                             return; // Exit the method after setting swipeValid to false
                         }
                     }
@@ -262,7 +262,7 @@ public class SwipeHandler : MonoBehaviour
             // Detect the end of a touch
             else if (touch.phase == TouchPhase.Ended)
             {
-                Debug.LogError("Touch End");
+                //Debug.LogError("Touch End");
                 //check if moveable or temp object selected? the detect swipe
                 if (swipeValid)
                 {
@@ -342,7 +342,7 @@ public class SwipeHandler : MonoBehaviour
         int currentSceneIndex;
 
         currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        Debug.LogError("5555555555555 sceneDirection: " + sceneDirection);
+        //Debug.LogError("5555555555555 sceneDirection: " + sceneDirection);
 
         //Check if scene
         // Menu or UIanimation Swipes must always go to first level // currentSceneIndex 0 = UIANIMATIONLAYER
@@ -356,30 +356,30 @@ public class SwipeHandler : MonoBehaviour
                     string lastLevel = ReturnLastCompletedLevel(completedLevelTextFilePath);
                     if (lastLevel == "")
                     {
-                        Debug.LogError("1 This probably wont be triggered");
+                        //Debug.LogError("1 This probably wont be triggered");
                         levelIndex = SceneManager.GetActiveScene().buildIndex + 1;
                     }
                     else
                     {
                         levelIndex = SceneUtility.GetBuildIndexByScenePath(lastLevel);
-                        Debug.LogError("2 lastLevel/levelIndex: " + lastLevel+levelIndex);
+                        //Debug.LogError("2 lastLevel/levelIndex: " + lastLevel+levelIndex);
                     }
                 }
                 else
                 {
                     levelIndex = SceneUtility.GetBuildIndexByScenePath(variableObject.currentScene);
-                    Debug.LogError("3 SwipeHandler variableObject.currentScene: " + variableObject.currentScene);
+                    //Debug.LogError("3 SwipeHandler variableObject.currentScene: " + variableObject.currentScene);
                 }
             }
             else
             {
-                Debug.LogError("4 No variableObject.currentScene, No lastLevel from list either");
+                //Debug.LogError("4 No variableObject.currentScene, No lastLevel from list either");
                 levelIndex = SceneManager.GetActiveScene().buildIndex + 1;
             }
         }
         else
         {
-            Debug.LogError("5 No variableObject.currentScene, No lastLevel from list either");
+            //Debug.LogError("5 No variableObject.currentScene, No lastLevel from list either");
             // 0: Load Current Scene, 1: Load next scene, -1: Load previous scene
             // 11: Load scene selector, 10 Load menu, 12? Load leaderboard/stats
             if (sceneDirection == 1)
@@ -392,7 +392,7 @@ public class SwipeHandler : MonoBehaviour
             }
             else if (sceneDirection == 0)
             {
-                Debug.LogError("0000000 No variableObject.currentScene, No lastLevel from list either");
+                //Debug.LogError("0000000 No variableObject.currentScene, No lastLevel from list either");
                 levelIndex = SceneManager.GetActiveScene().buildIndex;
             }
             else if (sceneDirection == 10)
@@ -407,7 +407,7 @@ public class SwipeHandler : MonoBehaviour
             else if (sceneDirection == 17)
             {
                 // Previous scene, used in Speed Level select
-                Debug.LogError($"SCENEEEEEEE {variableObject.currentScene}");
+                //Debug.LogError($"SCENEEEEEEE {variableObject.currentScene}");
                 levelIndex = SceneUtility.GetBuildIndexByScenePath(variableObject.currentScene);
             }
         }
@@ -422,7 +422,7 @@ public class SwipeHandler : MonoBehaviour
 
         if (transition == null)
         {
-            Debug.LogError("Animator component not found or assigned!");
+            //Debug.LogError("Animator component not found or assigned!");
         }
 
         //Delete temporary objects
@@ -548,11 +548,11 @@ public class SwipeHandler : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Failed to set active scene: Scene not valid or not loaded.");
+            //Debug.LogError("Failed to set active scene: Scene not valid or not loaded.");
             yield break; // Exit coroutine since we can't proceed
         }
         SceneManager.SetActiveScene(newScene);
-        Debug.LogError($"{newScene.name} is now the active scene.");
+        //Debug.LogError($"{newScene.name} is now the active scene.");
     }
 
     public IEnumerator StartAnyScene_NoTransition(string sceneName)
@@ -602,7 +602,7 @@ public class SwipeHandler : MonoBehaviour
         string filePath = Path.Combine(Application.persistentDataPath, playerjsonFilePath);
         playerjsonString = File.ReadAllText(filePath);
         playerObject = JsonUtility.FromJson<PlayerData>(playerjsonString);
-        Debug.LogError("playerjsonString - Load: " + playerjsonString);
+        //Debug.LogError("playerjsonString - Load: " + playerjsonString);
     }
 
     private void SavePlayerData()
@@ -618,7 +618,7 @@ public class SwipeHandler : MonoBehaviour
         string filePath = Path.Combine(Application.persistentDataPath, variablejsonFilePath);
         variableJsonString = File.ReadAllText(filePath);
         variableObject = JsonUtility.FromJson<VariableData>(variableJsonString);
-        Debug.LogError("SwipeHandler variableJsonString - Load: " + variableJsonString);
+        //Debug.LogError("SwipeHandler variableJsonString - Load: " + variableJsonString);
     }
 
     private void SaveVariableData()
@@ -627,7 +627,7 @@ public class SwipeHandler : MonoBehaviour
         string filePath = Path.Combine(Application.persistentDataPath, variablejsonFilePath);
         variableJsonString = JsonUtility.ToJson(variableObject);
         File.WriteAllText(filePath, variableJsonString);
-        Debug.LogError("variableJsonString - Save: " + variableJsonString);
+        //Debug.LogError("variableJsonString - Save: " + variableJsonString);
     }
     void ResetVariableData()
     {
@@ -685,6 +685,7 @@ public class SwipeHandler : MonoBehaviour
         public bool timeEnabled;
         public bool timeEnabledNotPace;
         public bool leaderboardEnabled;
+        public bool swipeHint;
         public string swipeRight;
         public string swipeLeft;
         public string swipeDown;

@@ -47,7 +47,7 @@ public class clickOnAnswerBox05 : MonoBehaviour
                     }
                     else
                     {
-                        objectRenderer.material.color = Color.red;
+                        objectRenderer.material.color = new Color32(207, 52, 35, 50);
                     }
                 }
 

@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.IO;
 using Postgrest.Models;
+using UnityEngine.UI;   // already added
 
 public class LeaderboardManager : MonoBehaviour
 {
@@ -43,12 +44,12 @@ public class LeaderboardManager : MonoBehaviour
     public CanvasGroup leaderboardCanvasGroup;
 
     private ActivityInsertDelayed activityInsertObject;
+    private HeartboolInsertDelayed heartInsertObject;
 
     private void Start()
     {
         // Initialize the Supabase client
-        supabase = new Client("https://acpornqddkzqsdppbabw.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjcG9ybnFkZGt6cXNkcHBiYWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM2NTU5MzcsImV4cCI6MjAyOTIzMTkzN30.UQ73w2nx-UxmXhxBF2_jSTl19aZ1bjb9LjYY4eraMtY");
-        //retrieve data and create dataObjects
+        supabase = new Client("https://crynucdigbnxdsnywawe.supabase.co", "sb_publishable_rXQIggagT9rQEGPMiGnyIg_JXVp2yww");//retrieve data and create dataObjects
         sceneObject = new SceneData();
         scenejsonFilePath = sceneCompleteMenu_script.scenejsonFilePath;
         filePath = Path.Combine(Application.persistentDataPath, scenejsonFilePath);
@@ -88,6 +89,61 @@ public class LeaderboardManager : MonoBehaviour
 
         highlightPlayerRowRed(userRank);
         leaderboardCanvasGroup.alpha = 1f;
+    }
+
+    public async Task InsertHeartBool(string level, string username, bool heart)
+    {
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "username_param", level},
+            { "level_param", username},
+            { "like_bool_param", heart}
+        };
+
+        try
+        {
+            var response = await supabase.Rpc("insert_heartbool", parameters);
+            //Debug.LogError("User inserted successfully.");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to insert heartbool set due to an exception: {ex.Message}");
+            //IMPO: Save activity to json object then file.
+
+            heartInsertObject = new HeartboolInsertDelayed();
+            // Set ActivityInsert() values from args
+            heartInsertObject.level = level;
+            heartInsertObject.username = username;
+            heartInsertObject.heart = heart;
+
+
+
+            int i = 0;
+            string currentFilePath = Path.Combine(Application.persistentDataPath, $"HeartboolInsertDelayed{i}.json");//"ActivityInsert0.json"
+
+            //file already exists, find empty value
+            while (File.Exists(currentFilePath))
+            {
+                i++;
+                currentFilePath = Path.Combine(Application.persistentDataPath, $"HeartboolInsertDelayed{i}.json");
+            }
+            //file does not exist
+            // Save to JSON file
+            string json = JsonUtility.ToJson(heartInsertObject);
+            File.WriteAllText(currentFilePath, json);
+
+            // Handle error
+            Debug.LogError("Failed to insert activity set. SAVED...");
+            //Debug.LogError("currentFilePath: "  + currentFilePath);
+        }
+    }
+    [Serializable]
+    public class HeartboolInsertDelayed
+    {
+        public string level;
+        public string username;
+        public bool heart;
     }
 
     public async Task<int> GetUserRank(string level, string username)
@@ -164,18 +220,98 @@ public class LeaderboardManager : MonoBehaviour
     public void CalculateRatingsForLeaderboard(decimal duration, TextMeshProUGUI TextMeshObject)
     {
         // Determine Rating
-        string completionRating = "Standard";
+        int numberOfStars = 1;
         if (duration <= sceneObject.goldTime)
         {
-            completionRating = "Epic";
-            TextMeshObject.color = new Color32(255, 165, 0, 255); // Orange
+            numberOfStars = 2;
+            //ompletionRating = "Epic";
+            //TextMeshObject.color = new Color32(255, 165, 0, 255); // Orange
         }
         if (duration <= sceneObject.perfTime)
         {
-            completionRating = "Legendary";
-            TextMeshObject.color = new Color32(128, 0, 128, 255); // Purple
+            numberOfStars = 3;
+            //completionRating = "Legendary";
+            //
         }
-        TextMeshObject.text = completionRating;
+        UpdateStarRatings(TextMeshObject, numberOfStars);
+        //TextMeshObject.text = completionRating;
+    }
+
+    public Vector3 centerPointOffset = Vector3.zero; // Public variable to adjust the center point
+    public Sprite starSprite; // Public reference to set the star image
+    public float starScale = 1.0f; // Public variable to adjust star size
+    public float localOffset; // Example value, adjust as needed
+    private Color32 starcolor;
+    public void UpdateStarRatings(TextMeshProUGUI textUGUI, int numberOfStars)
+    {
+        string ratingString = textUGUI.gameObject.name;
+        
+        // Get the position of the text and adjust with the public offset
+        Vector3 centerPoint = centerPointOffset;
+        switch (numberOfStars)
+        {
+            case 0:
+                // Do nothing
+                break;
+            case 1: 
+                starcolor = new Color32(207, 52, 35, 255); // Red
+                GenerateStar(centerPoint, $"{ratingString}_Star1", textUGUI.gameObject, starcolor);
+                break;
+            case 2:
+                starcolor = new Color32(255, 165, 0, 255); // Orange
+                GenerateStar(centerPoint + Vector3.left * localOffset, $"{ratingString}_Star1", textUGUI.gameObject, starcolor);
+                GenerateStar(centerPoint + Vector3.right * localOffset, $"{ratingString}_Star2", textUGUI.gameObject, starcolor);
+                break;
+            case 3:
+                starcolor = new Color32(128, 0, 128, 255); // Purple
+                // Positions of the stars
+                float usedOffset = localOffset * (float)2.0;
+                Vector3 star1Position = centerPoint + Vector3.left * usedOffset;
+                Vector3 star2Position = centerPoint; // Right
+                Vector3 star3Position = centerPoint + Vector3.right * usedOffset; // Left
+
+                // Generate the stars
+                GenerateStar(star1Position, $"{ratingString}_Star1", textUGUI.gameObject, starcolor); // Star 1
+                GenerateStar(star2Position, $"{ratingString}_Star2", textUGUI.gameObject, starcolor); // Star 2
+                GenerateStar(star3Position, $"{ratingString}_Star3", textUGUI.gameObject, starcolor); // Star 3
+
+                // Calculate distances between the stars
+                //loat distance1_2 = Vector3.Distance(star1Position, star2Position); // Distance between Star 1 and Star 2
+                //float distance1_3 = Vector3.Distance(star1Position, star3Position); // Distance between Star 1 and Star 3
+                //float distance2_3 = Vector3.Distance(star2Position, star3Position); // Distance between Star 2 and Star 3
+
+                // Log the distances for debugging
+                //Debug.LogError($"Distance between Star 1 and Star 2: {distance1_2}");
+                //Debug.LogError($"Distance between Star 1 and Star 3: {distance1_3}");
+                //Debug.LogError($"Distance between Star 2 and Star 3: {distance2_3}");
+                break;
+            default:
+                Debug.LogWarning("too many stars");
+                break;
+        }
+    }
+
+    private void GenerateStar(Vector3 position, string starName, GameObject parentObject, Color32 color)
+    {
+        // Create the star GameObject and set its parent
+        GameObject star = new GameObject(starName);
+        star.transform.SetParent(parentObject.transform, false); // Keep local position, don't use world position
+
+        // Get the RectTransform component to manipulate the UI positioning
+        RectTransform rectTransform = star.AddComponent<RectTransform>();
+
+        // Set the position in local space relative to the parent
+        rectTransform.localPosition = position; // Adjust the position
+
+        // Add Image component to display the star sprite
+        Image image = star.AddComponent<Image>();
+        image.sprite = starSprite; // Set the sprite for the star
+        image.color = color;
+        image.preserveAspect = true; // Optionally preserve the aspect ratio of the sprite
+
+        // Scale the star based on the starScale
+        rectTransform.sizeDelta = new Vector2(starScale, starScale); // Set the size of the image (this is the UI equivalent of scaling the sprite)
+        //Debug.LogError($"Position: {position}");
     }
 
     private async Task UpdateMedianAndPercentile(string level, string username)
@@ -280,17 +416,17 @@ public class LeaderboardManager : MonoBehaviour
 
         if (nameTexts[i] != null)
         {
-            nameTexts[i].color = new Color32(210, 0, 0, 255); // Change color to red
+            nameTexts[i].color = new Color32(207, 52, 35, 255); // Change color to red
         }
         // Update duration text
         if (durationTexts[i] != null)
         {
-            durationTexts[i].color = new Color32(210, 0, 0, 255); // Change color to red
+            durationTexts[i].color = new Color32(207, 52, 35, 255); // Change color to red
         }
         // Update rank text
         if (rankTexts[i] != null)
         {
-            rankTexts[i].color = new Color32(210, 0, 0, 255); // Change color to red
+            rankTexts[i].color = new Color32(207, 52, 35, 255); // Change color to red
         }
     }
 
@@ -312,6 +448,7 @@ public class LeaderboardManager : MonoBehaviour
         public int goldTime;
         public int perfTime;
         public int numRepetitions;
+        public bool heartScene;
     }
     [Serializable]
     public class VariableData
@@ -331,6 +468,7 @@ public class LeaderboardManager : MonoBehaviour
         public bool timeEnabled;
         public bool timeEnabledNotPace;
         public bool leaderboardEnabled;
+        public bool swipeHint;
         public string swipeRight;
         public string swipeLeft;
         public string swipeDown;

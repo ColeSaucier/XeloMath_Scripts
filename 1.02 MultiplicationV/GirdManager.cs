@@ -56,7 +56,7 @@ public class GridManager : MonoBehaviour
                 working = true;
                 GameObject clickedObject = hit.collider.gameObject;
                 Renderer squareRenderer = clickedObject.GetComponent<Renderer>();
-                squareRenderer.material.color = Color.red;
+                squareRenderer.material.color = new Color32(207, 52, 35, 50);
 
                 //SquareScript squareScript = clickedObject.GetComponent<SquareScript>();
 
